@@ -103,6 +103,15 @@ def moveset(user_input):
 
     y_moving(Y_row_move, Y_col_move)
 
+def winner():
+    global targets
+    # checks if all targets have a box to return a win
+    
+    for tar_y, tar_x in targets:
+        if grid[tar_y][tar_x] != "B":
+            return False
+    return True
+
 def y_moving(Y_row_move, Y_col_move):
     global grid, Y_row, Y_col, active_powerup
     # handles all necessary movements
@@ -122,12 +131,18 @@ def y_moving(Y_row_move, Y_col_move):
     # player is against a pillar
     if ...
 
-def winner():
-    global targets
-    # checks if all targets have a box to return a win
-    
-    for tar_y, tar_x in targets:
-        if grid[tar_y][tar_x] != "B":
-            return False
-    return True
+def game_render():
+    # renders the display
+    ...
+
+    # prints how many targets are filled
+    boxes_on_targets = ...
+    print(...)
+
+    # prints the active powerup
+    activated_pr = ...
+    print(...)
+
+def player_interaction():
+    # handles player inputs
 
