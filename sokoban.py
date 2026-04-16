@@ -31,14 +31,14 @@ def initial_load(basic_grid):
     global r, c, grid, targets, Y_row, Y_col, active_powerup
     global orig_grid, orig_targets, orig_Y_col, orig_Y_row
 
-    r, c = len(b_grid), len(b_grid[0])
+    r, c = len(basic_grid), len(basic_grid[0])
     targets = set()
     Y_row, Y_col = -1, -1
     active_powerup = None
     grid = []
 
     for i in range(r):
-        row = b_grid[i]
+        row = basic_grid[i]
         grid_row = []
         for j in range(c):
             tile = row[j]
@@ -113,7 +113,7 @@ def winner():
     global targets
     # checks if all targets have a box to return a win
     # if there is no target, automatically win
-    
+
     for tar_row, tar_col in targets:
         if grid[tar_row][tar_col] != "B":
             return False
