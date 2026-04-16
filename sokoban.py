@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import argparse
+import time
 
 # Global variables
 r, c = 0,0
@@ -22,11 +23,11 @@ def file_to_basic_grid(file_name):
     with open(file_name, 'r', encoding='utf-8') as f:
         rc = f.readline().strip() #reads first line, separated by space
         rows = int(rc.split()[0]) #isolates row
-        b_grid = [f.readline().strip().split() for _ in range(rows)] #each line is a list
+        basic_grid = [f.readline().strip().split() for _ in range(rows)] #each line is a list
 
-        initial_load(b_grid)
+        initial_load(basic_grid)
 
-def initial_load(b_grid):
+def initial_load(basic_grid):
     global r, c, grid, targets, Y_row, Y_col, active_powerup
     global orig_grid, orig_targets, orig_Y_col, orig_Y_row
 
@@ -51,8 +52,10 @@ def initial_load(b_grid):
                 grid_row.append(tile)
             else:
                 grid_row.append(tile)
-        grid.append(grid_row) #each line is now separated
-    #Y and _ are "." since they constantly change
+        grid.append(grid_row) # each line is now its own list
+
+    #Y_position is saved as "." since we will be putting Y on top of the spaces
+    # "_" is saved as "." to differentiate if Y or B is also on top of the target
 
     #save initial state for resets
     orig_grid = copy.deepcopy(grid)
@@ -70,16 +73,16 @@ def reset():
     active_powerup = None
 
 def grid_displayed():
-    # initially displays "." for all non powerup, banana, pillars
+    # initially displays "." for all non powerup, banana or pillars
     display = [["." for _ in range(c)] for _ in range(r)]
 
     for i in range(r):
         for j in range(c):
-            if grid[i][j] == "." and (i,j) in targets:
+            if grid[i][j] == "." and (i,j) in targets: # checks if target area is empty
                 display[i][j] = "_" # "_" never changes, only overlapped
             else:
                 display[i][j] = grid[i][j] #everything is as is
-    display[Y_row][Y_col] = "Y"
+    display[Y_row][Y_col] = "Y" 
     return display
 
 def got_powerup():
@@ -109,6 +112,7 @@ def moveset(user_input):
 def winner():
     global targets
     # checks if all targets have a box to return a win
+    # if there is no target, automatically win
     
     for tar_row, tar_col in targets:
         if grid[tar_row][tar_col] != "B":
@@ -229,10 +233,13 @@ def gameplay_loop():
             break
 
         print("\nAccepted moves: W / A / S / D / !")
-        player_moves = input("\n Enter your moves:").strip()
+        player_moves = input("\nEnter your moves:").strip()
 
         for move in player_moves:
             if move.lower() not in {"w","a","s","d","!"}:
+                print("\n")
+                print(f"{move} is not a valid move. All other moves are disregarded")
+                time.sleep(1.5)
                 break
             moveset(move)
 
