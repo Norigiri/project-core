@@ -1,315 +1,266 @@
-import copy
-
-from file_functions import emoji_to_text
-from gameplay import laro_position, mushroom_total, text_to_move, grass_or_others, tool_interaction, laro_movement, no_print_gameplay_loop
+import sokoban
 
 level0 = [
-['🌲', '🌲', '🌲'],
-['🟦', '🟦', '🟦'],
-['🌲', '🌲', '🌲'] ]
+  ["|", ".", "x", "|", "|", "|"],
+  ["Y", ".", ".", ".", ".", "_"],
+  [".", ".", "B", ".", ".", "."],
+  ["|", ".", ".", ".", "|", "|"]
+]
 
 level1 = [
-["🌲", "🌲", "🌲", "🌲", "🌲"], 
-["🌲", "🪓", "🧑",  "🍄", "🌲"], 
-["🌲", "🌲", "🌲", "🌲", "🌲"] ]
+  [".", ".", ".", ".", "|", "|", "|"],
+  ["x", "Y", "B", ".", ".", ".", "."],
+  [".", "}", ".", ".", "B", "|", "|"],
+  [".", ".", ".", "x", ".", "|", "_"]
+]
 
 level2 = [
-["🌲","🌲","🌲","🌲","🌲","🌲","🌲","🌲","🌲"],
-["🌲","🟩","🟩","🟩","🍄","🟩","🟩","🟩","🌲"],
-["🌲","🟩","🟩","🟩","🟦","🟩","🟩","🟩","🌲"],
-["🌲","🟩","🟩","🟩","🪨","🟩","🌲","🟩","🌲"],
-["🌲","🟩","🌲","🟩","🧑","🌲","🌲","🟩","🌲"],
-["🌲","🟩","🪓","🟩","🟩","🔥","🟩","🟩","🌲"],
-["🌲","🟩","🟩","🟩","🟩","🟩","🟩","🟩","🌲"],
-["🌲","🟩","🟩","🟩","🟩","🟩","🟩","🟩","🌲"],
-["🌲","🌲","🌲","🌲","🌲","🌲","🌲","🌲","🌲"], ]
+  [".", ".", ".", ".", ".", ".", ".", ".", ".", "."],
+  [".", "^", ".", ".", ".", ".", ".", "x", ".", "."],
+  [".", ".", ".", ".", "Y", "}", "}", ".", ".", "."],
+  [".", "|", ".", ".", ".", ".", "B", "B", ".", "."],
+  ["|", "_", "|", ".", ".", ".", ".", ".", "_", "."]
+]
 
 level3 = [
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'],
-['🌲', '🧑', '🌲', '🍄', '🟩', '🟩', '🟩', '🌲'],
-['🌲', '🟩', '🌲', '🌲', '🌲', '🌲', '🟩', '🌲'],
-['🌲', '🟩', '🟩', '🍄', '🟩', '🟩', '🍄', '🌲'],
-['🌲', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🌲'],
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'] ]
+  ["|", "|", "|", "|", "|", "x", "|", "|"],
+  ["|", "|", "|", ".", ".", ".", ".", "|"],
+  ["_", ".", "B", "|", "|", "|", ".", "|"],
+  ["|", "|", "|", "|", "|", "|", ".", "|"]
+]
 
 level4 = [
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'],
-['🌲', '🟩', '🟩', '🟩', '🟦', '🍄', '🌲'],
-['🌲', '🟩', '🟩', '🟩', '🟦', '🟩', '🌲'],
-['🌲', '🧑', '🪨', '🪨', '🟦', '🟦', '🌲'],
-['🌲', '🟩', '🟩', '🟩', '🟦', '🟩', '🌲'],
-['🌲', '🟩', '🟩', '🟩', '🟦', '🍄', '🌲'],
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'] ]
-
-level5 = [
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'],
-['🌲', '🟦', '🟦', '🟩', '🟩', '🧑', '🟩', '🪨', '🌲'],
-['🌲', '🪓', '🟦', '🟩', '🟦', '🟩', '🟦', '🟦', '🌲'],
-['🌲', '🟩', '🟦', '🟩', '🟦', '🟩', '🌲', '🟩', '🌲'],
-['🌲', '🟩', '🟩', '🟩', '🟦', '🟩', '🌲', '🍄', '🌲'],
-['🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲', '🌲'] ]
-
-memory = [[(12, 3), (23, 13)], [(1, 23), (67, 6)],
-[(0, 0), (1, 2)], [(1, 45), (5, 67)], [(146, 23), (87, 99)], ]
+  [".", ".", ".", ".", "x", ".", ".", ".", ".", ".", ".", "."],
+  [".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "B", "B"],
+  ["|", "}", "}", "x", "^", ".", ".", ".", ".", ".", "B", "B"],
+  [".", ".", ".", ".", ".", ".", ".", ".", "B", "B", "Y", "^"] 
+]
 
 
-def test_laro_position():
-    # To add to this test, input the grid of your map into the
-    # laro_position function and assert it with the (rows, cols)
-    # of Laro in the map.
-    assert laro_position(level0) == None
-    assert laro_position(level1) == (1, 2)
-    assert laro_position(level2) == (4, 4)
-    assert laro_position(level3) == (1, 1)
-    assert laro_position(level4) == (3, 1)
-    assert laro_position(level5) == (1, 5)
+def move_looper(moves_string):
+    # loops moves so it looks cleaner while testing
+    for move in moves_string:
+        sokoban.moveset(move)
 
-
-def test_mushroom_total():
-    # To add to this test, input the grid of your map into the
-    # mushroom_total function and assert it with the number of
-    # mushrooms in the map.
-    assert mushroom_total(level0) == 0
-    assert mushroom_total(level1) == 1
-    assert mushroom_total(level2) == 1
-    assert mushroom_total(level3) == 3
-    assert mushroom_total(level4) == 2
-    assert mushroom_total(level5) == 1
-
-
-def test_text_to_move():
-    assert text_to_move("W") == [(-1, 0)]
+def test_initial_load():
+    # To add more tests, input a level grid as seen above
+    # Assert the level as seen below with the row, col of Y
+    # The assertion is based on the range 0 to n-1
     
-    assert text_to_move("s") == [(1, 0)]
-    
-    assert text_to_move("L") == [(0, -1)]
-    
-    assert text_to_move("r") == [(0, 1)]
-    
-    assert text_to_move("p") == [('action', 'pickup')]
-    
-    assert text_to_move("!") == [('action', 'restart')]
-    
-    assert text_to_move("m") == [('action', 'nothing')]
-    
-    assert text_to_move("awsd") == [(0, -1), (-1, 0), (1, 0), (0, 1)]
-    
-    assert text_to_move("ALwPm!bWs") == [(0, -1), (0, -1), (-1, 0),
-    ('action', 'pickup'), ('action', 'nothing'), ('action', 'restart'),
-    (1, 0), (-1, 0), (1, 0)]
+    sokoban.initial_load(level0)
 
+    # tests Y position (Note: (-1,-1) means Y does not exist)
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 0
 
-def test_grass_or_others():
-    assert grass_or_others(12, 3, memory) == "⬜"
-    assert grass_or_others(23, 13, memory) == "⬜"
+    # tests how many targets and their positions
+    assert (1,5) in sokoban.targets
+    assert len(sokoban.targets) == 1
 
-    assert grass_or_others(1, 23, memory) == "🪓"
-    assert grass_or_others(67, 6, memory) == "🪓"
+    # tests if Y is moving accordingly
+    move_looper("ddddsasaaw")
+    assert sokoban.Y_row == 2
+    assert sokoban.Y_col == 1
 
-    assert grass_or_others(0, 0, memory) == "🔥"
-    assert grass_or_others(1, 2, memory) == "🔥"
+    # tests if Y picked up a powerup, correctly identified, and correctly replaced
+    move_looper("wwd")
+    assert sokoban.active_powerup == "x"
+    assert sokoban.grid[0][2] == "."
 
-    assert grass_or_others(1, 45, memory) == "💣"
-    assert grass_or_others(5, 67, memory) == "💣"
+    # tests if Y used up smash
+    move_looper("d")
+    assert sokoban.active_powerup is None # power up used
+    assert sokoban.grid[0][3] == "." # wall broken
 
-    assert grass_or_others(146, 23, memory) == "🧽"
-    assert grass_or_others(87, 99, memory) == "🧽"
+    # tests if when Y pushed a box, the box moved
+    move_looper("ssa")
+    assert sokoban.grid[2][2] == "."
+    assert sokoban.grid[2][1] == "B"
 
-    assert grass_or_others(42, 42, memory) == "🟩"
-    assert grass_or_others(16, 1, memory) == "🟩"
+    # tests if reset worked
+    sokoban.moveset("!") # best case is to observe if all destroyed, moved, and picked up are returned
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 0
+    assert sokoban.grid[2][2] == "B" # og box spot
+    assert sokoban.grid[0][3] == "|" # wall returned
+    assert sokoban.grid[0][2] == "x" # power up returned
 
+        # keep note that we only called sokoban.initial_load(level0) once
+        # thus all moves done within each level are saved which is why reset works
 
-def modified_movement(grid, move_input):
-    grid_copy = copy.deepcopy(grid)
-    mushrooms = mushroom_total(grid)
-    laro_coords = laro_position(grid)
-    memory0 = [[], [], [], [], []]
-    laro_item = "Empty"
-    move = text_to_move(move_input)[0]
-    (grid_copy, laro_coords, mushrooms, memory0, laro_item, validity) = laro_movement(grid_copy,
-                    laro_coords, move, mushrooms, memory0, laro_item)
-    return (emoji_to_text(grid_copy), memory0, mushrooms)
+#---------------------------------------------------------------------------------------------
 
+    # LEVEL 1 ASSERTIONS 
+    # this follows same format as above, with added tests for the following
+    # Slipping on bananas, winning the game, and smashing boxes
 
-def test_movement():
-    # To add to this test, take the initial state of your map and do
-    # a singular move and assert it to the resulting state of the map.
-    assert modified_movement(level1, "l") == ([
-    'TTTTT',
-    'TL.+T',
-    'TTTTT' ], [[], [(1, 1),], [], [], []], 1)
+    sokoban.initial_load(level1)
 
-    assert modified_movement(level1, "u") == ([
-    'TTTTT',
-    'TxL+T',
-    'TTTTT' ], [[], [], [], [], []], 1)
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 1
+    assert (3,6) in sokoban.targets
+    assert len(sokoban.targets) == 1
 
-    assert modified_movement(level1, "b") == ([
-    'TTTTT',
-    'TxL+T',
-    'TTTTT' ], [[], [], [], [], []], 1)
+    move_looper("dwds") # tests both Y moving and box moving
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 3
+    assert sokoban.grid[2][3] == "B"
+    move_looper("aala") 
+    # l is an invalid move but since we are unit testing
+    # it cannot physically ignore l, thus the last a should be registered
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 0
 
-    assert modified_movement(level1, "r") == ([
-    'TTTTT',
-    'Tx.LT',
-    'TTTTT' ], [[], [], [], [], []], 0)
+    # tests if Y slips on the banana
+    move_looper("ds") # slips downwards
+    assert sokoban.Y_row == 3
+    assert sokoban.Y_col == 1
+    sokoban.moveset("w") # slips upwards
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 1
 
-    assert modified_movement(level2, "l") == ([
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.TL.TT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ], [[], [], [], [], []], 1)
+    # tests if smash also breaks boxes
+    move_looper("addds")
+    assert sokoban.active_powerup == None
+    assert sokoban.grid[2][3] == "."
 
-    assert modified_movement(level2, "u") == ([
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...-...T',
-    'T...L.T.T',
-    'T.T..TT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ], [[(2, 4),], [], [], [], []], 1)
+    # tests if Y won the game
+    move_looper("sddaawwdsasdd") 
+    # sequence moving Y to break the wall 
+    # covering the target and moving the box
+    assert sokoban.winner() is True
 
-    assert modified_movement(level2, "b") == ([
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.T..TT.T',
-    'T.x.L*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ], [[], [], [], [], []], 1)
+    sokoban.moveset("!")
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 1
+    assert sokoban.grid[1][0] == "x"
+    assert sokoban.grid[3][3] == "x"
+    assert sokoban.grid[1][2] == "B"
+    assert sokoban.grid[2][4] == "B"
 
-    assert modified_movement(level2, "r") == ([
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.T.LTT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ], [[], [], [], [], []], 1)
+#---------------------------------------------------------------------------------------------
 
-    assert modified_movement(level2, "m") == ([
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.T.LTT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ], [[], [], [], [], []], 1)
+    # LEVEL 2 ASSERTIONS 
+    # this follows same format as above, with added tests for the following
+    # Strength powerup, moving multiple boxes
 
-    # Note that test_movement also serves as a unit test for 
-    # entity_moving and tool_interaction, as in each of these assertions
-    # entity_moving is used to move Laro around, and tool_interaction
-    # can be seen in the first assertion, since the coordinates of the
-    # axe has been properly stored in the memory
+    sokoban.initial_load(level2)
+    assert sokoban.Y_row == 2
+    assert sokoban.Y_col == 4
+    assert (4,1) in sokoban.targets
+    assert (4,8) in sokoban.targets
+    assert len(sokoban.targets) == 2
 
+    move_looper("dw") # tests both banana slipping and smash powerup
+    assert sokoban.Y_row == 1
+    assert sokoban.Y_col == 7
+    assert sokoban.active_powerup == "x"
+    assert sokoban.grid[1][7] == "."
+    move_looper("sassaa") # tests wall breaking
+    assert sokoban.grid[4][2] == "."
+    assert sokoban.active_powerup is None
 
-def modified_no_print_gameplay_loop(grid, move_str):
-    original_grid = copy.deepcopy(grid)
-    (if_cleared, original_grid) = no_print_gameplay_loop(original_grid, move_str)
-    text_grid = emoji_to_text(original_grid)
-    return (if_cleared, text_grid)
+    # tests if strength powerup is working
+    move_looper("wwwadddddddssa")
+    assert sokoban.active_powerup == "^"
+    assert sokoban.grid[1][1] == "."
+    assert sokoban.grid[3][5] == "B" #box on [3][6] moved left
+    assert sokoban.grid[3][6] == "B" #box on [3][7] moved left
 
+    # winning the game with multiple targets
+    move_looper("aaawaaswddssaawdddddwds")
+    assert sokoban.winner() is True
 
-def test_no_print_gameplay_loop():
-    # To add to this test, take the initial state of your map and input
-    # a string of moves and assert it to whether the map was cleared
-    # and the final state of the map.
-    assert modified_no_print_gameplay_loop(level0, "") == ('CLEAR', [
-    'TTT', 
-    '~~~',
-    'TTT' ])
+    sokoban.moveset("!")
+    assert sokoban.Y_row == 2
+    assert sokoban.Y_col == 4
+    assert sokoban.grid[1][7] == "x"
+    assert sokoban.grid[3][6] == "B" 
+    assert sokoban.grid[3][7] == "B" 
+    assert sokoban.grid[4][2] == "|"
 
-    assert modified_no_print_gameplay_loop(level0, "wfadeawdwa") == ('CLEAR', [
-    'TTT',
-    '~~~',
-    'TTT' ])
+#---------------------------------------------------------------------------------------------
 
-    assert modified_no_print_gameplay_loop(level2, "mo") == ('NO CLEAR', [
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.T.LTT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT'])
+    # LEVEL 3 ASSERTIONS
+    # Y does not exist, so any moves should not change Y's positions
+    # it is impossible to win in this map
 
-    assert modified_no_print_gameplay_loop(level2, "uuu") == ('CLEAR', [
-    'TTTTTTTTT',
-    'T...L...T',
-    'T...-...T',
-    'T.....T.T',
-    'T.T..TT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT'])
+    sokoban.initial_load(level3)
+    assert sokoban.Y_row == -1
+    assert sokoban.Y_col == -1
+    assert (2,0) in sokoban.targets
+    assert len(sokoban.targets) == 1
 
-    assert modified_no_print_gameplay_loop(level2, "bllpu") == ('NO CLEAR', [
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.L..TT.T',
-    'T....*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ])
+    move_looper("asadasfsdasadwaawad")
+    assert sokoban.Y_row == -1
+    assert sokoban.Y_col == -1
 
-    assert modified_no_print_gameplay_loop(level2, "bbb!b") == ('NO CLEAR', [
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R.T.T',
-    'T.T..TT.T',
-    'T.x.L*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ])
+    sokoban.moveset("!")
+    assert sokoban.Y_row == -1
+    assert sokoban.Y_col == -1
 
-    assert modified_no_print_gameplay_loop(level2, "brpu") == ('NO CLEAR', [
-    'TTTTTTTTT',
-    'T...+...T',
-    'T...~...T',
-    'T...R...T',
-    'T.T..L..T',
-    'T.x.....T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT' ])
+    assert sokoban.winner() is False
 
-    assert modified_no_print_gameplay_loop(level2, "brprrrrru") == ('NO CLEAR', [
-    '.........',
-    '....+....',
-    '....~....',
-    '....R.T..',
-    '..T..TT.L',
-    '..x......',
-    '.........',
-    '.........',
-    '.........' ])
+#---------------------------------------------------------------------------------------------
 
-    assert modified_no_print_gameplay_loop(level2, "blnpoi!uuu") == ('CLEAR', [
-    'TTTTTTTTT',
-    'T...L...T',
-    'T...-...T',
-    'T.....T.T',
-    'T.T..TT.T',
-    'T.x..*..T',
-    'T.......T',
-    'T.......T',
-    'TTTTTTTTT'])
+    # LEVEL 4 ASSERTIONS
+    # there are no targets, so it is impossible to lose
+    # the condition to win is vacuously true, thus always wins
+
+    sokoban.initial_load(level4)
+    assert sokoban.Y_row == 3
+    assert sokoban.Y_col == 10
+    assert sokoban.targets == set()
+    assert len(sokoban.targets) == 0
+
+    # initial box positions and wall
+    assert sokoban.grid[3][9] == "B"
+    assert sokoban.grid[3][8] == "B"
+    assert sokoban.grid[2][10] == "B"
+    assert sokoban.grid[1][10] == "B"
+    assert sokoban.grid[2][11] == "B"
+    assert sokoban.grid[1][11] == "B"
+    assert sokoban.grid[2][0] == "|"
+
+    move_looper("dwsawsa") # set of moves that tests if all boxes were moved
+    assert sokoban.Y_row == 3
+    assert sokoban.Y_col == 9
+    assert sokoban.active_powerup == "^"
+    assert sokoban.grid[3][9] == "."
+    assert sokoban.grid[3][8] == "B"
+    assert sokoban.grid[3][7] == "B"
+    assert sokoban.grid[2][10] == "."
+    assert sokoban.grid[1][10] == "B"
+    assert sokoban.grid[0][10] == "B"
+    assert sokoban.grid[2][11] == "."
+    assert sokoban.grid[1][11] == "B"
+    assert sokoban.grid[0][11] == "B"
+
+    # tests if powerups overwrite one another
+    move_looper("wwwaaaaa")
+    assert sokoban.active_powerup == "x"
+    move_looper("ss")
+    assert sokoban.active_powerup == "^"
+    sokoban.moveset("a")
+    assert sokoban.active_powerup == "x"
+
+    # tests if slipping on bananas with smash breaks the wall
+    sokoban.moveset("a")
+    assert sokoban.active_powerup == None
+    assert sokoban.grid[2][0] == "."
+
+    assert sokoban.winner() is True
+
+    sokoban.moveset("!")
+    assert sokoban.Y_row == 3
+    assert sokoban.Y_col == 10
+    assert sokoban.grid[3][9] == "B"
+    assert sokoban.grid[3][8] == "B"
+    assert sokoban.grid[2][10] == "B"
+    assert sokoban.grid[1][10] == "B"
+    assert sokoban.grid[2][11] == "B"
+    assert sokoban.grid[1][11] == "B"
+    assert sokoban.grid[2][0] == "|"
+    assert sokoban.grid[0][4] == "x"
+    assert sokoban.grid[2][3] == "x"
+    assert sokoban.grid[2][4] == "^"
